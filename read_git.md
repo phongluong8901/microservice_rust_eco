@@ -9,3 +9,9 @@ git checkout -b p2_setup_db
 git add .
 git commit -m "change: first"
 git push origin p2_setup_db
+
+# ---
+git checkout -b p3_setup_env
+git add .
+git commit -m "change: first"
+git push origin p3_setup_env
