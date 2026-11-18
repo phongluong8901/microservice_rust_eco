@@ -62,6 +62,8 @@ cargo add sqlx --features runtime-tokio,tls-rustls,postgres
 
 cargo add thiserror
 
+cargo add uuid --features v4
+
 
 # --- generate code
 

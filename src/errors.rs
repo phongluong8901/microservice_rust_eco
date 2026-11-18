@@ -36,7 +36,7 @@ impl IntoResponse for AppError {
                 Json(json!({
                     "status": false,
                     "code": StatusCode::BAD_REQUEST.as_u16(),
-                    "error": e.to_string()
+                    "error": e.to_string() //Cuối cùng gọi .into_response() để biến tuple chứa StatusCode và Json thành kiểu dữ liệu Response chung của Axum.
                 })),
             )
                 .into_response(),
