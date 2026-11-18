@@ -1,0 +1,39 @@
+[config]
+default_to_workspace = false
+
+[tasks.build]
+description = "Biên dịch toàn bộ dự án"
+command = "cargo"
+args = ["build", "--all-features"]
+
+[tasks.run]
+description = "Chạy ứng dụng"
+command = "cargo"
+args = ["run"]
+
+[tasks.dev]
+description = "Chạy chế độ lập trình (tự động reload khi sửa code)"
+command = "cargo"
+args = ["watch", "-x", "run"]
+
+[tasks.test]
+description = "Chạy kiểm thử bằng cargo-nextest"
+command = "cargo"
+args = ["nextest", "run"]
+
+[tasks.check]
+description = "Kiểm tra lỗi biên dịch nhanh và format code"
+dependencies = ["fmt-check", "clippy"]
+
+[tasks.fmt-check]
+command = "cargo"
+args = ["fmt", "--all", "--", "--check"]
+
+[tasks.clippy]
+command = "cargo"
+args = ["clippy", "--all-targets", "--all-features"]
+
+[tasks.clean]
+description = "Dọn dẹp thư mục build target/"
+command = "cargo"
+args = ["clean"]

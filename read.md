@@ -78,3 +78,14 @@ cargo watch -x run
 
 # --- curl api test
 curl.exe http://localhost:3000
+
+# --- Makefile
+cargo make dev — Bật server và tự động reload mỗi khi lưu file.
+
+cargo make run — Chạy server một lần.
+
+cargo make build — Biên dịch dự án.
+
+cargo make test — Chạy test bằng nextest.
+
+cargo make check — Kiểm tra chuẩn format và cảnh báo code thừa/sai sót (clippy).
