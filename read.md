@@ -60,6 +60,8 @@ cargo add dotenvy
 
 cargo add sqlx --features runtime-tokio,tls-rustls,postgres
 
+cargo add thiserror
+
 
 # --- generate code
 
