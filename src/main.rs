@@ -14,7 +14,8 @@ use axum::{
 };
 
 #[allow(unused_imports)]
-use proj_1::{AppError, AppResultJson, configs2::AppConfig, dbs::initialed_db};
+use proj_1::{AppError, AppResult, AppResultJson, configs2::AppConfig, dbs::initialed_db};
+use serde::{Deserialize, Serialize};
 
 use serde_json::json;
 use sqlx::PgPool; // Import PgPool để làm state cho mx_auth
@@ -57,12 +58,14 @@ async fn main() {
     let app = Router::new()
         .route("/{msg}", get(say_hello))
         .route("/db_check", get(|| async { "Check DB" }))
+        .route("/user/{id}", get(get_user))
         // Gắn middleware map_response (thứ tự chạy sau cùng)
         .layer(middleware::map_response(mx_map_response))
         // Gắn middleware auth có truyền state là pool (thứ tự chạy trước handler)
         .layer(middleware::from_fn_with_state(pool.clone(), mx_auth))
         // Gắn Extension chứa Arc<PgPool> để Handler gọi lại khi cần query DB
-        .layer(Extension(Arc::new(pool)));
+        .layer(Extension(Arc::new(pool.clone())))
+        .with_state(pool);
 
     // Bước 5: Lấy cấu hình địa chỉ và mở cổng TCP Listener
     let addr = cfg.web.addr;
@@ -111,4 +114,22 @@ pub async fn mx_auth(
     let res = next.run(req).await;
 
     Ok(res)
+}
+
+#[derive(Serialize, Deserialize, sqlx::FromRow)]
+pub struct User {
+    pub pk_user_id: i32,
+    pub username: String,
+}
+
+pub async fn get_user(State(db): State<PgPool>, Path(id): Path<i32>) -> AppResult<Json<User>> {
+    let user = sqlx::query_as::<_, User>(
+        r#"SELECT pk_user_id, username FROM "user"."tbl_users" WHERE pk_user_id = $1"#,
+    )
+    .bind(id)
+    .fetch_optional(&db)
+    .await?
+    .ok_or(AppError::NotFound)?;
+
+    Ok(Json(user))
 }

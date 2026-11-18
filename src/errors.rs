@@ -15,6 +15,9 @@ pub enum AppError {
 
     #[error("Not found...")]
     NotFound,
+
+    #[error("Sqlx Error")]
+    Sqlx(#[from] sqlx::Error),
 }
 
 //#[derive(Debug, Serialize)]: Cho phép struct này tự động chuyển đổi thành JSON để trả về cho client.
@@ -46,6 +49,16 @@ impl IntoResponse for AppError {
                     "status": false,
                     "code": StatusCode::NOT_FOUND.as_u16(),
                     "error": "Not found"
+                })),
+            )
+                .into_response(),
+
+            AppError::Sqlx(e) => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({
+                    "status": false,
+                    "code": StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
+                    "error": e.to_string()
                 })),
             )
                 .into_response(),
