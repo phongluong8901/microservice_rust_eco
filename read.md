@@ -58,6 +58,8 @@ cargo add tracing tracing-subscriber
 # 5. Đọc biến môi trường từ file .env
 cargo add dotenvy
 
+cargo add sqlx --features runtime-tokio,tls-rustls,postgres
+
 
 # --- generate code
 
@@ -75,9 +77,24 @@ cargo make dev
 cargo watch -x run
 
 # --- docker
+# 1. Chạy toàn bộ hệ thống (App + PostgreSQL)
+docker compose up -d
+
+# 2. Xem log ứng dụng
+docker compose logs -f app
+
+# 3. Chỉ chạy riêng PostgreSQL trên Docker
+docker compose up -d postgres
+
+# 4. Tắt hệ thống
+docker compose down
 
 # --- curl api test
+curl.exe --version
+
 curl.exe http://localhost:3000
+
+curl.exe http://localhost:3000/db_check
 
 # --- Makefile
 cargo make dev — Bật server và tự động reload mỗi khi lưu file.
@@ -89,3 +106,32 @@ cargo make build — Biên dịch dự án.
 cargo make test — Chạy test bằng nextest.
 
 cargo make check — Kiểm tra chuẩn format và cảnh báo code thừa/sai sót (clippy).
+
+# --- docker compose
+
+Cách 1: Chạy toàn bộ hệ thống (App + PostgreSQL) bằng Docker Compose
+powershell
+docker compose up -d --build
+
+Kiểm tra log của ứng dụng:
+
+powershell
+docker compose logs -f app
+
+Test API:
+
+powershell
+curl.exe http://localhost:3000
+
+- 
+Cách 2: Chỉ chạy PostgreSQL trên Docker (để code và debug Rust ở máy thật)
+powershell
+docker compose up -d postgres
+
+Sau đó ở terminal máy thật, chạy chế độ dev như bình thường:
+
+powershell
+cargo make dev
+Tắt hệ thống khi xong việc
+powershell
+docker compose down
